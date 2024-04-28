@@ -7,7 +7,6 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 // TODO add snake collision
-// TODO prevent food from spawning where the snake is
 
 public class Game extends JPanel implements ActionListener {
 
@@ -23,9 +22,9 @@ public class Game extends JPanel implements ActionListener {
 
     private boolean isGameOver = false;
 
-    private int randomPosX = (int)(Math.random() * (300 + 1)) / 10 * 10, randomPosY = (int)(Math.random() * (300 + 1)) / 10 * 10;
+    private int randomPosX = (int)(Math.random() * (WIDTH - SEGMENT_SIZE + 1)) / SEGMENT_SIZE * SEGMENT_SIZE, randomPosY = (int)(Math.random() * (HEIGHT - SEGMENT_SIZE + 1)) / SEGMENT_SIZE * SEGMENT_SIZE;
 
-    private int points = 0;
+    private int length = 1;
 
     // Possible directions
     public enum Direction { UP, DOWN, LEFT, RIGHT }
@@ -76,18 +75,35 @@ public class Game extends JPanel implements ActionListener {
     private void drawPoints(Graphics g) {
         g.setColor(Color.WHITE);
         g.setFont(new Font("Arial", Font.BOLD, 14));
-        g.drawString("Points: " + points, 9, 20);
+        g.drawString("Length: " + length, 9, 20);
     }
 
     private void eatFood() {
         if (snakeSegments.getFirst().y == randomPosY && snakeSegments.getFirst().x == randomPosX) {
-            randomPosX = (int)(Math.random() * (300 + 1)) / 10 * 10;
-            randomPosY = (int)(Math.random() * (300 + 1)) / 10 * 10;
-            points++;
+            length++;
             Point tail = snakeSegments.getLast();
             Point newSegment = new Point(tail);
             snakeSegments.add(newSegment);
+            placeFood();
         }
+    }
+
+    // Checks random position until free spot to place.
+    private void placeFood() {
+        boolean isOccupied;
+        do {
+            randomPosX = (int)(Math.random() * (WIDTH - SEGMENT_SIZE + 1)) / SEGMENT_SIZE * SEGMENT_SIZE;
+            randomPosY = (int)(Math.random() * (HEIGHT - SEGMENT_SIZE + 1)) / SEGMENT_SIZE * SEGMENT_SIZE;
+
+            isOccupied = false;
+            for (Point segment : snakeSegments) {
+                if (segment.x == randomPosX && segment.y == randomPosY) {
+                    isOccupied = true;
+                    break;
+                }
+            }
+        } while (isOccupied);
+
     }
 
     private void move() {
