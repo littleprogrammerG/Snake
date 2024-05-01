@@ -6,12 +6,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-// TODO add snake collision
+/*
+Todo add game ending
+Todo alternate green each snake segment
+*/
 
 public class Game extends JPanel implements ActionListener {
 
     private Timer timer;
-    private final int DELAY = 200; // milliseconds
+    private final int DELAY = 100; // milliseconds
 
     private final int WIDTH = 300;
     private final int HEIGHT = 300;
@@ -103,7 +106,6 @@ public class Game extends JPanel implements ActionListener {
                 }
             }
         } while (isOccupied);
-
     }
 
     private void move() {
@@ -122,7 +124,10 @@ public class Game extends JPanel implements ActionListener {
             case RIGHT -> head.x += SEGMENT_SIZE;
         }
 
-        if (head.y < 0 || head.y > HEIGHT-SEGMENT_SIZE || head.x < 0 || head.x > WIDTH-SEGMENT_SIZE) {
+        boolean wallCollision = head.y < 0 || head.y > HEIGHT-SEGMENT_SIZE || head.x < 0 || head.x > WIDTH-SEGMENT_SIZE;
+        boolean selfCollision = snakeSegments.stream().skip(1).anyMatch(segment -> segment.x == head.x && segment.y == head.y);
+
+        if (wallCollision || selfCollision) {
             timer.stop();
             isGameOver = true;
         } else {
