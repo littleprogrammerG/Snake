@@ -7,7 +7,6 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 /*
-Todo add game ending
 Todo alternate green each snake segment
 */
 
@@ -24,6 +23,7 @@ public class Game extends JPanel implements ActionListener {
     private Direction nextDirection = Direction.RIGHT;
 
     private boolean isGameOver = false;
+    private boolean isGameWon = false;
 
     private int randomPosX = (int)(Math.random() * (WIDTH - SEGMENT_SIZE + 1)) / SEGMENT_SIZE * SEGMENT_SIZE, randomPosY = (int)(Math.random() * (HEIGHT - SEGMENT_SIZE + 1)) / SEGMENT_SIZE * SEGMENT_SIZE;
 
@@ -60,6 +60,11 @@ public class Game extends JPanel implements ActionListener {
             g.setColor(Color.RED);
             g.setFont(new Font("Arial", Font.BOLD, 14));
             g.drawString("Game Over", WIDTH / 2 - 40, HEIGHT / 2 + 5);
+        }
+        if (isGameWon) {
+            g.setColor(Color.GREEN);
+            g.setFont(new Font("Arial", Font.BOLD, 14));
+            g.drawString("You Won!", WIDTH / 2 - 40, HEIGHT / 2 + 5);
         }
     }
 
@@ -130,6 +135,8 @@ public class Game extends JPanel implements ActionListener {
         if (wallCollision || selfCollision) {
             timer.stop();
             isGameOver = true;
+        } else if (length >= WIDTH/SEGMENT_SIZE * HEIGHT/SEGMENT_SIZE) {
+            isGameWon = true;
         } else {
             snakeSegments.addFirst(head);
             snakeSegments.removeLast();
