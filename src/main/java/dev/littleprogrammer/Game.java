@@ -9,7 +9,6 @@ import java.util.ArrayList;
 public class Game extends JPanel implements ActionListener {
 
     private Timer timer;
-    private final int DELAY = 100; // milliseconds
 
     private final int WIDTH = 300;
     private final int HEIGHT = 300;
@@ -21,7 +20,7 @@ public class Game extends JPanel implements ActionListener {
     private boolean isGameOver = false;
     private boolean isGameWon = false;
 
-    private JButton restartButton;
+    private final JButton restartButton;
 
     private int randomPosX = (int)(Math.random() * (WIDTH - SEGMENT_SIZE + 1)) / SEGMENT_SIZE * SEGMENT_SIZE, randomPosY = (int)(Math.random() * (HEIGHT - SEGMENT_SIZE + 1)) / SEGMENT_SIZE * SEGMENT_SIZE;
 
@@ -56,6 +55,8 @@ public class Game extends JPanel implements ActionListener {
     }
 
     private void initGame() {
+        final int DELAY = 100; // milliseconds
+
         snakeSegments = new ArrayList<>();
         snakeSegments.add(new Point(WIDTH / 2, HEIGHT / 2));
 
@@ -167,9 +168,6 @@ public class Game extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (!oppositeDir(nextDirection)) {
-            nextDirection = nextDirection;
-        }
         move();
         eatFood();
         repaint();
