@@ -6,10 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-/*
-Todo alternate green each snake segment
-*/
-
 public class Game extends JPanel implements ActionListener {
 
     private Timer timer;
@@ -25,6 +21,8 @@ public class Game extends JPanel implements ActionListener {
     private boolean isGameOver = false;
     private boolean isGameWon = false;
 
+    private JButton restartButton;
+
     private int randomPosX = (int)(Math.random() * (WIDTH - SEGMENT_SIZE + 1)) / SEGMENT_SIZE * SEGMENT_SIZE, randomPosY = (int)(Math.random() * (HEIGHT - SEGMENT_SIZE + 1)) / SEGMENT_SIZE * SEGMENT_SIZE;
 
     private int length = 1;
@@ -33,6 +31,23 @@ public class Game extends JPanel implements ActionListener {
     public enum Direction { UP, DOWN, LEFT, RIGHT }
 
     public Game() {
+        // Restart button
+        restartButton = new JButton("Restart");
+        restartButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                restartGame();
+            }
+        });
+        add(restartButton);
+        restartButton.setVisible(false); // Hide until game is over
+
+        // Set button properties
+        restartButton.setBackground(Color.RED);
+        restartButton.setForeground(Color.WHITE);
+        restartButton.setBorder(BorderFactory.createLineBorder(Color.BLACK)); // Add a black border to the button
+        restartButton.setFont(new Font("Arial", Font.BOLD, 12)); // Set the font to Arial Bold 12pt
+
         // Set screen size and focusability
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setBackground(Color.BLACK);
@@ -60,6 +75,10 @@ public class Game extends JPanel implements ActionListener {
             g.setColor(Color.RED);
             g.setFont(new Font("Arial", Font.BOLD, 14));
             g.drawString("Game Over", WIDTH / 2 - 40, HEIGHT / 2 + 5);
+
+            restartButton.setVisible(true);
+        } else {
+            restartButton.setVisible(false);
         }
         if (isGameWon) {
             g.setColor(Color.GREEN);
@@ -69,9 +88,12 @@ public class Game extends JPanel implements ActionListener {
     }
 
     private void drawSnake(Graphics g) {
-        g.setColor(Color.GREEN);
+        int counter = 0;
         for (Point segment : snakeSegments) {
+            int shade = counter % 2 == 0 ? 0x0FF000 : 0x00CC00;
+            g.setColor(new Color(shade));
             g.fillRect(segment.x, segment.y, SEGMENT_SIZE, SEGMENT_SIZE);
+            counter++;
         }
     }
 
@@ -145,6 +167,9 @@ public class Game extends JPanel implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        if (!oppositeDir(nextDirection)) {
+            nextDirection = nextDirection;
+        }
         move();
         eatFood();
         repaint();
@@ -184,5 +209,18 @@ public class Game extends JPanel implements ActionListener {
                 (direction == Direction.DOWN && newDir == Direction.UP) ||
                 (direction == Direction.LEFT && newDir == Direction.RIGHT) ||
                 (direction == Direction.RIGHT && newDir == Direction.LEFT);
+    }
+
+    private void restartGame() {
+        snakeSegments.clear();
+        snakeSegments.add(new Point(WIDTH / 2, HEIGHT / 2));
+        direction = Direction.RIGHT;
+        nextDirection = direction;
+        isGameOver = false;
+        isGameWon = false;
+        length = 1;
+        placeFood();
+        timer.start();
+        repaint();
     }
 }
